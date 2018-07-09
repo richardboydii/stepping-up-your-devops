@@ -1,13 +1,13 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="reveal.js/css/reveal.css">
-		<link rel="stylesheet" href="reveal.js/css/theme/league.css">
+		<link rel="stylesheet" href="css/simple.css">
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
                 <section>
-                    <h2>Stepping Up Your DevOps</h2>
+                    <h2>Stepping Up Your DevOps With Step Functions</h2>
                     <h4>by Richard Boyd II</h4>
                 </section>
                 <section>
@@ -15,13 +15,185 @@
                     <ul>
                         <li>CloudOps Lead at Bright Health</li>
                         <ul>
-                            <li></li>
+                            <li>DevOps is a thing you <b>do</b> not what you <b>are</b></li>
+                            <li>Care for and maintain all cloud infrastructure (AWS)</li>
+                            <li>We automate to help the business scale</li>
+                            <li>Customer focused, servant to the business</li>
+                            <li>Yes, we're hiring</li>
                         </ul>
-                        <li>Customer focused</li>
-                        <li>Need to automate to scale the business</li>
+                        <li>20 years working with computers in some form or fashion</li>
+                        <li>OIF vet, Eagle Scout, yadda yadda</li>
                     </ul>
                 </section>
-			</div>
+                <section>
+                    <h3>What You Should Learn From This Talk</h3>
+                    <ul>
+                        <li>Serverless Technologies</li>
+                        <li>A Pattern for Re-usable Lambdas</li>
+                        <li>Event Driven Architecture and State Machines</li>
+                        <li>AWS Step Functions</li>
+                        <li>How Step Functions Can Be Used for Complex Automation</li>
+                    </ul>
+                </section>
+                <section>
+                    <section>
+                        <h3>Part 1: Server(less) Is More</h3>
+                        <h6>(servers you don't control)</h6>
+                    </section>            
+                    <section>
+                        <h3>Serverless is</h3>
+                        <ul>
+                            <li>Dynamically provisioned compute resources</li>
+                            <li>Executes some code during its lifecycle</li>
+                            <li>You pay for what you use</li>
+                            <li>Everybody has some</li>
+                            <ul>
+                                <li>AWS == Lambda</li>
+                                <li>GCE == Cloud Functions</li>
+                                <li>Azure == Azure Functions</li>
+                            </ul>
+                            <li>Runs inside a container</li>
+                            <li>You don't control the underlying server</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>AWS Lambda</h3>
+                        <ul>
+                            <li>Came out in November 2014</li>
+                            <li>Uses an Amazon Linux Container to run your code</li>
+                            <li>Languages Supported: NodeJS, Ruby, Python, Java, C#, Go</li>                            
+                            <li>Numerous event sources can trigger an execution</li>
+                            <li>Your code has <b>five minutes</b> to execute</li>
+                            <li>No shared disk between invokations</li>
+                            <li>Each new invocation is a new execution environment</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Use Cases</h3>
+                        <ul>
+                            <li>Create a thumbnail when a file is uploaded to S3</li>
+                            <li>Send a Slack message when an email is recieved</li>
+                            <li>Write to a database when an SQS message is placed in a queue</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Part 2: A Pattern for Re-Usable Lambdas</h3>
+                        <h6>(like the Konami code but with Python)</h6>
+                    </section>
+                    <section>
+                        <h3>Lambda Documentation is Not Great</h3>
+                        <ul>
+                            <li>There are several quick start libraries out there for developing Lambda based apps</li>
+                            <li>Lambda comes with sample events that you can use to parse</li>
+                            <li>Very little focus is on making Lambdas re-usable</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>The Generic Lambda Pattern</h3>
+                        <ul>
+                            <li>Build Lambdas like you're bulding a Unix tool</li>
+                            <li>Single purpose, well documented</li>
+                            <li>Can be piped between other Lambdas</li>
+                            <li>Declare / document your event syntax as JSON before the handler</li>
+                            <li>Describe acceptable fields and what you return</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Example Pattern</h3>
+                        <pre><code data-trim data-noescape>
+import boto3
+
+"""
+Accepts:
+{ 
+    "event_name": {
+        "process_event": true,
+        "data": {
+            "field1": "Field 1 Value",
+            "field2": "Field 2 Value",
+        }
+    }
+}
+
+Returns:
+{
+    "event_data":
+        "info: "Event Info"
+}
+"""
+def sample_lambda(event, context):
+    field1 = event["event_name"]["data"]["field1"]
+    field2 = event["event_name"]["data"]["field2"]
+    # Do some cool stuff
+    return event_info
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Part 3: Event Driven Architecture and State Machines</h3>
+                        <h6>(lots of acronymns and funny diagrams)</h6>
+                    </section>
+                    <section>
+                        <h3>Event Driven Architecture (EDA)</h3>
+                        <ul>
+                            <li>A software architecture pattern that is built around handling events</li>
+                            <li>Something happens which causes something else to happen which causes something else to happen</li>
+                            <li>Each component of the archicture is built around handling an event in the chain</li>
+                            <li>A Rube Goldberg machine is a great example of an EDA</li>
+                            <li>Most CI / CD pipelines are event driven</li>
+                            <li>Serverless is inherintly event driven</li>
+                        </ul>
+                    </section>
+                    <section>
+                            <h3>Example: Grilling EDA</h3>
+                            <img src="img/grilling_eda.png"/>
+                        </section>
+                    <section>
+                        <h3>(Finite) State Machines (FSM)</h3>
+                        <ul>
+                            <li>A machine that can be in only one of a finite number of states at a time</li>
+                            <li>Examples are vending machines, elevators, traffic lights</li>
+                            <li>States can be deterministic or non-deterministic</li>
+                            <ul>
+                                <li>deterministic == each state has one transition state for each possible input</li>
+                                <li>non-deterministic == each state can transition to many (or none) states for an input</li>
+                            </ul>
+                            <li>For this talk we will focus on <b>deterministic</b> state machines</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Example: Cat State Machine</h3>
+                        <img src="img/cat_driven_state_machine.png"/>
+                    </section>
+                    <section>
+                        <h3>EDA + FSM = EDAFSM</h3>
+                        <ul>
+                            <li>Event Driven Architectures express State Machines ideas</li>
+                            <li>Merging the concepts together gives us a Business Process or Workflow</li>
+                            <li>Business Workflows are what we use as a model for automation</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Example: Austin Weekend Workflow</h3>
+                        <img src="img/austin_weekend_workflow.png"/>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Part 4: AWS Step Functions</h3>
+                        <h6>(fancy Rube Goldberg machines)</h6>
+                    </section>
+                    <section>
+                        <h3>A Step Function Is</h3>
+                        <ul>
+                            <li>A collection of Lambdas (or activities)</li>
+                        </ul>
+                    </section>
+                </section>
+            </div>
 		</div>
 		<script src="reveal.js/js/reveal.js"></script>
 		<script>
