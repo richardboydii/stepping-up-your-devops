@@ -189,9 +189,42 @@ def sample_lambda(event, context):
                     <section>
                         <h3>A Step Function Is</h3>
                         <ul>
-                            <li>A collection of Lambdas (or activities)</li>
+                            <li>A collection of Lambdas (or Activites) glued together by logic</li>
+                            <ul>
+                                <li>An Activity is a daemon running on your instance that accepts jobs</li>
+                                <li>Great for long-running processes</li>
+                            </ul>
+                            <li>Each invocation of a Step Function is its own exectuion environment</li>
+                            <li>Can create custom event data to pass between States</li>
                         </ul>
                     </section>
+                    <section>
+                        <h3>Step Function States</h3>
+                        <ul>
+                            <li>Each State in a Step Function can contain logic like</li>
+                            <ul>
+                                <li>Wait for x seconds</li>
+                                <li>Run several tasks in Parallel</li>
+                                <li>Retry if there is a failure</li>
+                            </ul>
+                            <li>States can be chained together to create complex workflows</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h3>Part 5: How Step Functions Can Be Used for Complex Automation</h3>
+                        <h6>(Demo Gods be kind)</h6>
+                    </section>
+                    <section>
+                        <h3>Demo 1: Log Incoming SES Emails</h3>
+                    </section>
+                    <section>
+                        <h3>Demo 2: MS SQL Database Restoration</h3>
+                    </section>
+                </section>
+                <section>
+                    <h2>Questions?</h2>
                 </section>
             </div>
 		</div>
