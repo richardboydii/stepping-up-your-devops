@@ -1,5 +1,6 @@
 import boto3
 import re
+import time
 """
 Accepts:
 {
@@ -18,7 +19,7 @@ Original Data Object
         "data": {
             "table": "SesEmailog",
             "record": {
-                "receiveDate": start_date,
+                "receiveDate": epoch_time,
                 "from": email_from,
                 "key": key,
                 "bucket": bucket
@@ -62,13 +63,14 @@ def ses_generator(event, context):
         }
     }
     message = "Received email from %s" % email_from
+    epoch_time = int(round(time.time() * 1000))
     event["cloudwatch"] = {
     "data": {
                 "log_group": "SesEmailLog",
                 "log_stream": "bots",
                 "log_events": [
                 {
-                    "timestamp": start_date,
+                    "timestamp": epoch_time,
                     "message": message
                 }
             ]
